@@ -29,12 +29,12 @@ CardDealer >> addCardTo: aPlayerName [
 	assignatedCards add: (AssignatedCard from: aPlayerName with: deck takeACard).
 ]
 
-{ #category : #initialize }
+{ #category : #actions }
 CardDealer >> addToPermanentMoves: aMove [
 	permanentMoves add: aMove copy.
 ]
 
-{ #category : #initialize }
+{ #category : #actions }
 CardDealer >> handle: aMove with: aGame [
 	self verifyIfCardIsAssignated: aMove.
 	aMove activateEffect: aGame.
