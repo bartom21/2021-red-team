@@ -38,7 +38,7 @@ RedGameTest >> effectsDistribution [
 { #category : #tests }
 RedGameTest >> playATurnWithoutMoves: game [
 	| player |
-	player := game whosTurnIsIt.
+	player := game currentPlayer.
 	game rollDiceFor: player.
 	game finishTurn.
 ]
@@ -547,7 +547,7 @@ RedGameTest >> testCannotAskWhoWonBeforeTheGameEnded [
 		andWith: amountOfInitialCards.
 	4 timesRepeat: [ self playATurnWithoutMoves: aGame ].
 	self
-		should: [ aGame whoWon ]
+		should: [ aGame winner ]
 		raise: Error
 		withMessage: 'the game is still running'
 ]
@@ -1119,7 +1119,7 @@ RedGameTest >> testPlayAGameAndAskWhoWon [
 		with: players
 		andWith: amountOfInitialCards .
 	self playWithoutMoves: aGame.
-	self assert: aGame whoWon equals: 'martin'
+	self assert: aGame winner equals: 'martin'
 ]
 
 { #category : #tests }

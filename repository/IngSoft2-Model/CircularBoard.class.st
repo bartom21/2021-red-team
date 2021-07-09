@@ -86,16 +86,16 @@ CircularBoard >> updatePositionOf: player with: value [
 ]
 
 { #category : #queries }
-CircularBoard >> whoWon [
+CircularBoard >> winner [
 	^positionsBoard whosFirst.
 ]
 
 { #category : #actions }
-CircularBoard >> with: cardsHandler move: player with: rollValue [
+CircularBoard >> with: cardDealer  move: player with: rollValue [
 	| currentPosition currentCell |
 	positionsBoard updatePositionOf: player with: rollValue.
 	currentPosition := self positionOnLap: player.
 	currentCell := cells at: currentPosition.
 	lastCell := currentCell .
-	currentCell activateEffect: self from: player with: cardsHandler.
+	currentCell activateEffect: self from: player with: cardDealer.
 ]

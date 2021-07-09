@@ -6,7 +6,7 @@ Class {
 
 { #category : #actions }
 CancellationCard >> activateEffectWith: game and: aMove [ 
-	game removePermanentMove: (aMove target).
+	game removePermanentEffect: (aMove target).
 ]
 
 { #category : #actions }
