@@ -5,8 +5,8 @@ Class {
 }
 
 { #category : #actions }
-RedoCard >> activateEffectWith: game and: aTargetMove [ 
-	game useLastCardEffectWith: aTargetMove.
+RedoCard >> activateEffectWith: game and: aMove [ 
+	game useLastCardEffectWith: aMove.
 ]
 
 { #category : #actions }

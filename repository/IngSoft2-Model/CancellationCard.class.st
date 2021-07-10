@@ -6,7 +6,13 @@ Class {
 
 { #category : #actions }
 CancellationCard >> activateEffectWith: game and: aMove [ 
+	self assertTargeted: aMove.
 	game removePermanentEffect: (aMove target).
+]
+
+{ #category : #actions }
+CancellationCard >> assertTargeted: aMove [.
+	(aMove class = TargetedMove ) ifFalse: [ self error: self className , ' must be played on a Targeted Move' ].
 ]
 
 { #category : #actions }
