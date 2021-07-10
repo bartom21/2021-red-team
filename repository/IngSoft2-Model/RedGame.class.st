@@ -6,7 +6,8 @@ Class {
 		'board',
 		'laps',
 		'playerSequence',
-		'cardDealer'
+		'cardDealer',
+		'lastToRoll'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -43,6 +44,12 @@ RedGame >> assertIfGameHasEnded [
 RedGame >> assertIfItsPlaying: playerName [
 	(playerSequence assertIfItsPlaying: playerName)
 		ifFalse: [ self error: 'Cannot roll for a player that is not playing' ]
+]
+
+{ #category : #actions }
+RedGame >> assertLastToRoll: playerName [
+	playerName = lastToRoll 
+		ifTrue: [ self error: 'can only roll the dice once on your turn' ]
 ]
 
 { #category : #queries }
@@ -101,12 +108,14 @@ RedGame >> rollDiceFor: playerName [
 	self assertIfGameHasEnded.
 	self assertIfItsPlaying: playerName.
 	self assertCorrespondentTurn: playerName.
+	self assertLastToRoll: playerName.
 	permanentCardsResult := cardDealer
 		accumulatePermanentEffectsOn: playerName.
 	board
 		with: cardDealer
 		move: playerName
-		with: dieHandle roll + permanentCardsResult
+		with: dieHandle roll + permanentCardsResult.
+	lastToRoll := playerName. 
 ]
 
 { #category : #actions }

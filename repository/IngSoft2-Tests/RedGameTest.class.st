@@ -108,24 +108,24 @@ RedGameTest >> testACancellationMove [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
 	game play: move.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: OverloadCard new
 		against: 'martin'.
 	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
-	objectiveMove := TargetMove
+	objectiveMove := TargetedMove
 		from: 'juan'
 		with: OverloadCard new
 		against: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: CancellationCard new
 		against: objectiveMove.
@@ -166,7 +166,7 @@ RedGameTest >> testACardCell [
 	game finishTurn.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: SpeedCard new
 		against: 'martin'.
@@ -202,17 +202,17 @@ RedGameTest >> testARedoMove [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
 	game play: move.
 	game finishTurn.
-	move := TargetMove from: 'juan' with: SpeedCard new against: 'juan'.
+	move := TargetedMove from: 'juan' with: SpeedCard new against: 'juan'.
 	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: RedoCard new
 		against: 'martin'.
@@ -252,18 +252,18 @@ RedGameTest >> testARedoMoveAfterARedoMoveReusesTheSameCard [
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
-	move := TargetMove from: 'juan' with: SpeedCard new against: 'juan'.
+	move := TargetedMove from: 'juan' with: SpeedCard new against: 'juan'.
 	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: RedoCard new
 		against: 'martin'.
 	game play: move.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: RedoCard new
 		against: 'juan'.
@@ -300,7 +300,7 @@ RedGameTest >> testARepeatMove [
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
-	move := TargetMove from: 'juan' with: RepeatCard new against: 'juan'.
+	move := TargetedMove from: 'juan' with: RepeatCard new against: 'juan'.
 	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
@@ -332,7 +332,7 @@ RedGameTest >> testASpeedMove [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: SpeedCard new
 		against: 'martin'.
@@ -407,7 +407,7 @@ RedGameTest >> testAnOverloadMove [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
@@ -580,11 +580,11 @@ RedGameTest >> testCannotCancelACardIfNoPermanentCardsAreActive [
 	game rollDiceFor: 'martin'.
 	game finishTurn.
 	game rollDiceFor: 'juan'.
-	objectiveMove := TargetMove
+	objectiveMove := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: CancellationCard new
 		against: objectiveMove.
@@ -621,18 +621,18 @@ RedGameTest >> testCannotCancelACardThatHasntBeenPlayed [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: SpeedCard new
 		against: 'martin'.
 	game play: move.
 	game finishTurn.
 	game rollDiceFor: 'juan'.
-	objectiveMove := TargetMove
+	objectiveMove := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: CancellationCard new
 		against: objectiveMove.
@@ -903,7 +903,7 @@ RedGameTest >> testCannotPlayAPermanentCardWhenItsNotYourTurn [
 		withLaps: 1
 		with: players
 		andWith: amountOfInitialCards.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: OverloadCard new
 		against: 'martin'.
@@ -935,7 +935,7 @@ RedGameTest >> testCannotPlayARedoMoveWithoutAnyPreviewsMoves [
 		withLaps: 1
 		with: players
 		andWith: amountOfInitialCards.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: RedoCard new
 		against: 'martin'.
@@ -969,7 +969,7 @@ RedGameTest >> testCannotPlayATargetMoveWithAnAccelerationCard [
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
 	self
-		should: [ TargetMove
+		should: [ TargetedMove
 				from: 'martin'
 				with: AccelerationCard new
 				against: 'martin' ]
@@ -1024,6 +1024,29 @@ RedGameTest >> testCannotRollDiceForAnInvalidPlayer [
 		with: players
 		andWith: amountOfInitialCards.
 	self should: [game rollDiceFor: 'Juan Roman Riquelme'] raise: Error withMessage: 'Cannot roll for a player that is not playing'.
+]
+
+{ #category : #tests }
+RedGameTest >> testCannotRollTheDiceTwiceOnTheSameTurn [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards |
+	deck := self randomDeck.
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	self should: [game rollDiceFor: 'martin'] raise: Error withMessage: 'can only roll the dice once on your turn'.
 ]
 
 { #category : #tests }
@@ -1083,13 +1106,13 @@ RedGameTest >> testGoBackwardsIfAccumulatedEffectsGiveANegativeResult [
 	game rollDiceFor: 'juan'.
 	game finishTurn.
 	game rollDiceFor: 'martin'.
-	move := TargetMove
+	move := TargetedMove
 		from: 'martin'
 		with: OverloadCard new
 		against: 'juan'.
 	game play: move.
 	game finishTurn.
-	move := TargetMove
+	move := TargetedMove
 		from: 'juan'
 		with: OverloadCard new
 		against: 'juan'.
@@ -1339,7 +1362,7 @@ RedGameTest >> testPlayAnInstantCardWhenItsNotYourTurn [
 		with: players
 		andWith: amountOfInitialCards.
 	game rollDiceFor: 'martin'.
-	move := TargetMove from: 'juan' with: RepeatCard new against: 'juan'.
+	move := TargetedMove from: 'juan' with: RepeatCard new against: 'juan'.
 	game play: move.
 	game finishTurn.
 
@@ -1369,7 +1392,7 @@ RedGameTest >> testPlayingARepeatCardHasNoEffectIfAnyoneRollsTheDice [
 		withLaps: 1
 		with: players
 		andWith: amountOfInitialCards .
-	move := TargetMove from: 'juan' with: RepeatCard new against: 'juan'.
+	move := TargetedMove from: 'juan' with: RepeatCard new against: 'juan'.
 	game play: move.
 	self assert: (game positionOf: 'juan') equals: 0
 ]

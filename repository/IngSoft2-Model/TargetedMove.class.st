@@ -1,5 +1,5 @@
 Class {
-	#name : #TargetMove,
+	#name : #TargetedMove,
 	#superclass : #Object,
 	#instVars : [
 		'player',
@@ -10,51 +10,51 @@ Class {
 }
 
 { #category : #'instance creation' }
-TargetMove class >> from: aPlayer with: aCard against: objetive [
+TargetedMove class >> from: aPlayer with: aCard against: objetive [
 	(aCard equals: AccelerationCard new) ifTrue: [ self error: 'Cant create a Target Move with an AccelerationCard' ].
 	^ self new initializeWith: aPlayer with: aCard against: objetive.
 ]
 
 { #category : #actions }
-TargetMove >> activateEffect: aRedGame [ 
+TargetedMove >> activateEffect: aRedGame [ 
 	card activateEffectWith: aRedGame and: self.
 ]
 
 { #category : #queries }
-TargetMove >> card [
+TargetedMove >> card [
 	^ card
 ]
 
 { #category : #actions }
-TargetMove >> changeCard: aCard [ 
+TargetedMove >> changeCard: aCard [ 
 	^ self class from: player with: aCard against: target.
 ]
 
 { #category : #actions }
-TargetMove >> effectOn: aPlayer [
+TargetedMove >> effectOn: aPlayer [
 	^ target = aPlayer
-		ifTrue: [ card effect ]
+		ifTrue: [ card effect]
 		ifFalse: [ 0 ]
 ]
 
 { #category : #queries }
-TargetMove >> equalsMove: anotherMove [ 
+TargetedMove >> equalsMove: anotherMove [ 
 	^ (self class = anotherMove class) and: [(player = anotherMove source) and: [ target = anotherMove target ]]
 ]
 
 { #category : #initialize }
-TargetMove >> initializeWith: aPlayer with: aCard against: objetive [
+TargetedMove >> initializeWith: aPlayer with: aCard against: objetive [
 	player := aPlayer.
 	card := aCard.
 	target := objetive.
 ]
 
 { #category : #actions }
-TargetMove >> source [
+TargetedMove >> source [
 	^ player.
 ]
 
 { #category : #queries }
-TargetMove >> target [
+TargetedMove >> target [
 	^ target
 ]

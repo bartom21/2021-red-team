@@ -35,8 +35,7 @@ CardDealer >> addPermanentEffect: aMove [
 CardDealer >> assertIfCardIsAssignated: aMove [
 	assignatedCards
 		detect: [ :assignatedCard | 
-			assignatedCard player = aMove source
-				and: [ assignatedCard card equals: aMove card ] ]
+			assignatedCard isAssignated: aMove card To: aMove source ]
 		ifFound: [ :assignatedCard | assignatedCards remove: assignatedCard ]
 		ifNone: [ self error: 'cant use a card thats not yours' ]
 ]
