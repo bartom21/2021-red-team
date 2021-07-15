@@ -41,6 +41,11 @@ CircularBoard >> assertIfIsPrisioner: playerName with: rollValue [
 	^ (prision isArrested: playerName) ifTrue: [ 0 ] ifFalse: [ rollValue  ].
 ]
 
+{ #category : #actions }
+CircularBoard >> breakFree: playerName [
+	prision breakFree: playerName.
+]
+
 { #category : #initialize }
 CircularBoard >> initializeWith: positions andWithAll: collectionOfCells [
 	cells := collectionOfCells.

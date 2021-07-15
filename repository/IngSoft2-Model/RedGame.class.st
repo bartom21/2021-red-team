@@ -52,6 +52,11 @@ RedGame >> assertLastToRoll: playerName [
 		ifTrue: [ self error: 'can only roll the dice once on your turn' ]
 ]
 
+{ #category : #actions }
+RedGame >> breakFree: playerName [ 
+	board breakFree: playerName .
+]
+
 { #category : #queries }
 RedGame >> currentPlayer [
 	^ playerSequence currentPlayer.
