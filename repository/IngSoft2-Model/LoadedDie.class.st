@@ -13,6 +13,11 @@ LoadedDie class >> with: aNumberOfFaces [
 	^ self new initializeWith: aNumberOfFaces.
 ]
 
+{ #category : #queries }
+LoadedDie >> faces [
+	^ faces
+]
+
 { #category : #initialize }
 LoadedDie >> initializeWith: aNumberOfFaces [
 	faces := aNumberOfFaces.

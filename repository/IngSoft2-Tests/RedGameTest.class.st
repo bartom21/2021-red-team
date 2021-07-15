@@ -167,6 +167,39 @@ RedGameTest >> testACardCell [
 ]
 
 { #category : #tests }
+RedGameTest >> testAPrisionCell [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards |
+	cardsDistribution := OrderedCollection new.
+	cardsDistribution
+		add: (DiscreteProbabilityEvent of: SpeedCard new with: 1).
+	deck := Deck with: (RandomSource basedOn: cardsDistribution).
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: PrisionCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 0.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 12.
+]
+
+{ #category : #tests }
 RedGameTest >> testARedoMove [
 	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards |
 	cards := OrderedCollection new.

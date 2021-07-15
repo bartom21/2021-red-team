@@ -104,17 +104,19 @@ RedGame >> removePermanentEffect: aMove [
 
 { #category : #actions }
 RedGame >> rollDiceFor: playerName [
-	| permanentCardsResult |
+	| permanentCardsResult rollValue |
 	self assertIfGameHasEnded.
 	self assertIfItsPlaying: playerName.
 	self assertCorrespondentTurn: playerName.
-	self assertLastToRoll: playerName.
+	self assertLastToRoll: playerName. 
+	rollValue := dieHandle roll .
+	board assertFreedom: playerName with: dieHandle and: rollValue .
 	permanentCardsResult := cardDealer
 		accumulatePermanentEffectsOn: playerName.
 	board
 		with: cardDealer
 		move: playerName
-		with: dieHandle roll + permanentCardsResult.
+		with: rollValue + permanentCardsResult.
 	lastToRoll := playerName. 
 ]
 
