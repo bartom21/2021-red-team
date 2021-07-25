@@ -8,9 +8,15 @@ Class {
 }
 
 { #category : #'instance creation' }
+LoadedDeck class >> assertIfEmpty: cards [
+	cards
+		ifEmpty: [ self error: 'Cannot create a LoadedDeck without cards' ]
+]
+
+{ #category : #'instance creation' }
 LoadedDeck class >> with: cards [
-	cards ifEmpty: [ self error: 'Cannot create a LoadedDeck without cards' ].
-	^ self new intializeWith: cards .
+	self assertIfEmpty: cards.
+	^ self new intializeWith: cards
 ]
 
 { #category : #initialize }

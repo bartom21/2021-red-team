@@ -11,14 +11,34 @@ Class {
 }
 
 { #category : #'instance creation' }
-CardDealer class >> with: players with: aNumberOfAssignatedCards andWith: deck [ 
-	(aNumberOfAssignatedCards >= 0) ifFalse: [ self error: 'invalid number of initial cards' ].
-	^ self new initializeWith: aNumberOfAssignatedCards with: players andWith: deck.
+CardDealer class >> assertPositiveNumberOfAssignatedCards: aNumberOfAssignatedCards [
+	aNumberOfAssignatedCards >= 0
+		ifFalse: [ self error: 'invalid number of initial cards' ]
+]
+
+{ #category : #'instance creation' }
+CardDealer class >> with: players with: value andWith: deck [
+	self assertPositiveNumberOfAssignatedCards: value.
+	^ self new
+		initializeWith: value
+		with: players
+		andWith: deck
 ]
 
 { #category : #actions }
-CardDealer >> accumulatePermanentEffectsOn: target [
-	^ permanentEffects ifEmpty: [ 0 ] ifNotEmpty: [permanentEffects sum: [ :move | move effectOn: target]].
+CardDealer >> accumulatePermanentEffectsOnCell: target [
+	| effects |
+	effects := permanentEffects select: [ :move | move isTargeted ].
+	^effects ifEmpty: [ 0 ] ifNotEmpty: [effects sum: [ :move | move effectOn: target]].
+	
+	
+]
+
+{ #category : #actions }
+CardDealer >> accumulatePermanentEffectsOnPlayer: target [
+	^permanentEffects ifEmpty: [ 0 ] ifNotEmpty: [permanentEffects sum: [ :move | move effectOn: target]].
+	
+	
 ]
 
 { #category : #actions }

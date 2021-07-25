@@ -9,9 +9,22 @@ Class {
 }
 
 { #category : #'instance creation' }
+LoadedDie class >> assertIfEmpty: cards [
+	cards
+		ifEmpty: [ self error: 'Cannot create a LoadedDie without roll values' ]
+]
+
+{ #category : #'instance creation' }
+LoadedDie class >> assertMinimumOfFaces: aNumberOfFaces [
+	aNumberOfFaces >= 3
+		ifFalse: [ self error: 'invalid number of faces' ]
+]
+
+{ #category : #'instance creation' }
 LoadedDie class >> with: aNumberOfFaces andWith: rollValues [
-	(aNumberOfFaces >= 3 ) ifFalse: [ self error: 'invalid number of faces' ].
-	^ self new initializeWith: aNumberOfFaces andWith: rollValues .
+	self assertMinimumOfFaces: aNumberOfFaces.
+	self assertIfEmpty: rollValues.
+	^ self new initializeWith: aNumberOfFaces andWith: rollValues
 ]
 
 { #category : #queries }

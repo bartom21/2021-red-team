@@ -10,13 +10,21 @@ Class {
 }
 
 { #category : #'instance creation' }
+CircularBoard class >> assertIfEmpty: collection withError: block [
+	collection
+		ifEmpty: [ self error: block ].
+	
+]
+
+{ #category : #'instance creation' }
 CircularBoard class >> with: players andWithAll: cells [
-	| boardOfPositions positions|
-	cells ifEmpty: [ self error: 'cant create a board without cells' ].
-	players ifEmpty: [ self error: 'cant create a board without players' ].
-	positions := players collect: [ :player | (Position from: player)].
-	boardOfPositions := PositionsBoard with: positions asOrderedCollection.
-	^ self new initializeWith: boardOfPositions andWithAll: cells.
+	| boardOfPositions positions |
+	self assertIfEmpty: cells withError: 'cant create a board without cells'. 
+	self assertIfEmpty: players withError: 'cant create a board without players'.
+	positions := players collect: [ :player | Position from: player ].
+	boardOfPositions := PositionsBoard
+		with: positions asOrderedCollection.
+	^ self new initializeWith: boardOfPositions andWithAll: cells
 ]
 
 { #category : #queries }
@@ -32,7 +40,7 @@ CircularBoard >> arePlaying: players [
 { #category : #actions }
 CircularBoard >> assertEffectsOn: currentPosition with: cardDealer for: player [
 	| effectsValue |
-	effectsValue := cardDealer accumulatePermanentEffectsOn: currentPosition.
+	effectsValue := cardDealer accumulatePermanentEffectsOnCell: currentPosition.
 	self updatePositionOf: player with: effectsValue. 
 
 ]
@@ -122,5 +130,5 @@ CircularBoard >> with: cardDealer  move: player with: rollValue [
 	currentCell := cells at: currentPosition.
 	lastCell := currentCell .
 	currentCell activateEffect: self from: player with: cardDealer.
-	"self assertEffectsOn: currentPosition with: cardDealer for: player."
+	self assertEffectsOn: currentPosition with: cardDealer for: player.
 ]

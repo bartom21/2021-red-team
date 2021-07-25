@@ -10,14 +10,20 @@ Class {
 }
 
 { #category : #'instance creation' }
+Position class >> assertIfEmpty: playerName [
+	playerName
+		ifEmpty: [ self error: 'cant create a Position without a name' ]
+]
+
+{ #category : #'instance creation' }
 Position class >> from: playerName [
 	^ self from: playerName with: 0 andWith: Active new.
 ]
 
 { #category : #'instance creation' }
 Position class >> from: playerName with: newValue andWith: aState [
-	playerName ifEmpty: [ self error: 'cant create a Position without a name' ].
-	^ self new initializeWith: playerName with: newValue andWith: aState.
+	self assertIfEmpty: playerName.
+	^ self new initializeWith: playerName with: newValue andWith: aState
 ]
 
 { #category : #queries }

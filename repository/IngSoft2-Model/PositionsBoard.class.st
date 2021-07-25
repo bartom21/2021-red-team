@@ -8,9 +8,15 @@ Class {
 }
 
 { #category : #'instance creation' }
+PositionsBoard class >> assertIfEmpty: somePositions [
+	somePositions
+		ifEmpty: [ self error: 'cannot create a boardOfPositions without positions' ]
+]
+
+{ #category : #'instance creation' }
 PositionsBoard class >> with: somePositions [
-	somePositions ifEmpty: [ self error: 'cannot create a boardOfPositions without positions' ].
-	^ self new initializeWith: somePositions .
+	self assertIfEmpty: somePositions.
+	^ self new initializeWith: somePositions
 ]
 
 { #category : #actions }

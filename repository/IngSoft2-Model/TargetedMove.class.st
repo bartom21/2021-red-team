@@ -9,9 +9,15 @@ Class {
 }
 
 { #category : #'instance creation' }
+TargetedMove class >> assertTargetedCard: aMove [
+	(aMove card equals: AccelerationCard new)
+		ifTrue: [ self error: 'Cant create a Target Move with an AccelerationCard' ]
+]
+
+{ #category : #'instance creation' }
 TargetedMove class >> with: aMove against: objetive [
-	(aMove card equals: AccelerationCard new) ifTrue: [ self error: 'Cant create a Target Move with an AccelerationCard' ].
-	^ self new initializeWith: aMove against: objetive.
+	self assertTargetedCard: aMove.
+	^ self new initializeWith: aMove against: objetive
 ]
 
 { #category : #actions }
@@ -38,13 +44,18 @@ TargetedMove >> effectOn: aTarget [
 
 { #category : #queries }
 TargetedMove >> equalsMove: anotherMove [ 
-	^ (self class = anotherMove class) and: [ (move equalsMove: anotherMove move) and: [ target = anotherMove target ]].
+	^ (anotherMove isTargeted) and: [ (move equalsMove: anotherMove move) and: [ target = anotherMove target ]].
 ]
 
 { #category : #initialize }
 TargetedMove >> initializeWith: aMove against: objetive [
 	move := aMove .
 	target := objetive.
+]
+
+{ #category : #actions }
+TargetedMove >> isTargeted [
+	^true
 ]
 
 { #category : #queries }

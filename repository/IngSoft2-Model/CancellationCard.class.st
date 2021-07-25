@@ -12,7 +12,7 @@ CancellationCard >> activateEffectWith: game and: aMove [
 
 { #category : #actions }
 CancellationCard >> assertTargeted: aMove [.
-	(aMove class = TargetedMove ) ifFalse: [ self error: self className , ' must be played on a Targeted Move' ].
+	(aMove isTargeted) ifFalse: [ self error: self className , ' must be played on a Targeted Move' ].
 ]
 
 { #category : #actions }

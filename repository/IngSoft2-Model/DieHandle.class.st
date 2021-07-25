@@ -8,9 +8,14 @@ Class {
 }
 
 { #category : #'instance creation' }
+DieHandle class >> assertIfEmpty: dice [
+	dice ifEmpty: [ self error: 'cannot create an empty die handle' ]
+]
+
+{ #category : #'instance creation' }
 DieHandle class >> with: dice [
-	dice ifEmpty: [ self error: 'cannot create an empty die handle' ].
-	^ self new initializeWith: dice.
+	self assertIfEmpty: dice.
+	^ self new initializeWith: dice
 ]
 
 { #category : #queries }

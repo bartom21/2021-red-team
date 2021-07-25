@@ -13,14 +13,40 @@ Class {
 }
 
 { #category : #'instance creation' }
+RedGame class >> assert: aCircularBoard hasEqual: players [
+	(aCircularBoard arePlaying: players)
+		ifFalse: [ self error: 'game and board must have the same players' ]
+]
+
+{ #category : #'instance creation' }
+RedGame class >> assertGraeterThanZero: aNumberOfLaps [
+	aNumberOfLaps > 0
+		ifFalse: [ self error: 'invalid number of laps' ]
+]
+
+{ #category : #'instance creation' }
+RedGame class >> assertIfEmpty: players [
+	players
+		ifEmpty: [ self error: 'cannot create a RedGame without players' ]
+]
+
+{ #category : #'instance creation' }
 RedGame class >> with: aCircularBoard with: aDieHandle with: aDeck withLaps: aNumberOfLaps with: players andWith: aNumberOfAssignatedCards [
-	| aSequence cardDealer|
-	players ifEmpty: [ self error: 'cannot create a RedGame without players' ].
-	(aNumberOfLaps > 0) ifFalse: [ self error: 'invalid number of laps' ].
-	(aCircularBoard arePlaying: players) ifFalse: [ self error: 'game and board must have the same players' ].
+	| aSequence cardDealer |
+	self assertIfEmpty: players.
+	self assertGraeterThanZero: aNumberOfLaps.
+	self assert: aCircularBoard hasEqual: players.
 	aSequence := Sequence with: players.
-	cardDealer := CardDealer with: players with: aNumberOfAssignatedCards andWith: aDeck.
-	^ self new initializeWith: aCircularBoard with: aDieHandle withLaps: aNumberOfLaps with: aSequence andWith: cardDealer.
+	cardDealer := CardDealer
+		with: players
+		with: aNumberOfAssignatedCards
+		andWith: aDeck.
+	^ self new
+		initializeWith: aCircularBoard
+		with: aDieHandle
+		withLaps: aNumberOfLaps
+		with: aSequence
+		andWith: cardDealer
 ]
 
 { #category : #actions }
@@ -123,7 +149,7 @@ RedGame >> rollDiceFor: playerName [
 	rollValue := dieHandle roll .
 	self assertIfHasRolledMax: playerName with: rollValue .
 	permanentCardsResult := cardDealer
-		accumulatePermanentEffectsOn: playerName.
+		accumulatePermanentEffectsOnPlayer: playerName.
 	board
 		with: cardDealer
 		move: playerName
