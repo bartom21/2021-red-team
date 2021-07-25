@@ -17,8 +17,8 @@ CardDealer class >> with: players with: aNumberOfAssignatedCards andWith: deck [
 ]
 
 { #category : #actions }
-CardDealer >> accumulatePermanentEffectsOn: player [
-	^ permanentEffects ifEmpty: [ 0 ] ifNotEmpty: [permanentEffects sum: [ :move | move effectOn: player]].
+CardDealer >> accumulatePermanentEffectsOn: target [
+	^ permanentEffects ifEmpty: [ 0 ] ifNotEmpty: [permanentEffects sum: [ :move | move effectOn: target]].
 ]
 
 { #category : #actions }

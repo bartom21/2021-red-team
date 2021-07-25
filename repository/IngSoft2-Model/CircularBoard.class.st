@@ -4,8 +4,7 @@ Class {
 	#instVars : [
 		'cells',
 		'lastCell',
-		'positionsBoard',
-		'prision'
+		'positionsBoard'
 	],
 	#category : #'IngSoft2-Model'
 }
@@ -31,19 +30,22 @@ CircularBoard >> arePlaying: players [
 ]
 
 { #category : #actions }
-CircularBoard >> assertFreedom: playerName with: aDieHandle and: rollValue [ 
-	(prision isArrested: playerName)
-		ifTrue: [ prision assertFreedom: playerName with: aDieHandle and: rollValue ].
+CircularBoard >> assertEffectsOn: currentPosition with: cardDealer for: player [
+	| effectsValue |
+	effectsValue := cardDealer accumulatePermanentEffectsOn: currentPosition.
+	self updatePositionOf: player with: effectsValue. 
+
 ]
 
 { #category : #actions }
-CircularBoard >> assertIfIsPrisioner: playerName with: rollValue [ 
-	^ (prision isArrested: playerName) ifTrue: [ 0 ] ifFalse: [ rollValue  ].
+CircularBoard >> assertFreedomOf: playerName [ 
+	positionsBoard assertPossibleUnblockFor: playerName.
+
 ]
 
 { #category : #actions }
 CircularBoard >> breakFree: playerName [
-	prision breakFree: playerName.
+	positionsBoard activatePositionOf: playerName.
 ]
 
 { #category : #initialize }
@@ -51,7 +53,6 @@ CircularBoard >> initializeWith: positions andWithAll: collectionOfCells [
 	cells := collectionOfCells.
 	positionsBoard := positions.
 	lastCell := RegularCell new.
-	prision := Prision with: OrderedCollection new.
 	
 ]
 
@@ -95,12 +96,12 @@ CircularBoard >> rankingOf: name [
 
 { #category : #actions }
 CircularBoard >> repeatLastEffectOn: playerName with: aRedGame [ 
-	lastCell activateEffect: self from: playerName with: aRedGame. 
+		lastCell activateEffect: self from: playerName with: aRedGame
 ]
 
 { #category : #actions }
 CircularBoard >> takeToPrision: playerName [
-	prision addPrisioner: playerName .
+	positionsBoard blockPositionOf: playerName.
 ]
 
 { #category : #actions }
@@ -115,11 +116,11 @@ CircularBoard >> winner [
 
 { #category : #actions }
 CircularBoard >> with: cardDealer  move: player with: rollValue [
-	| currentPosition currentCell cellsToMove |
-	cellsToMove := self assertIfIsPrisioner: player with: rollValue .
-	positionsBoard updatePositionOf: player with: cellsToMove.
+	| currentPosition currentCell|
+	positionsBoard updatePositionOf: player with: rollValue .
 	currentPosition := self positionOnLap: player.
 	currentCell := cells at: currentPosition.
 	lastCell := currentCell .
 	currentCell activateEffect: self from: player with: cardDealer.
+	"self assertEffectsOn: currentPosition with: cardDealer for: player."
 ]

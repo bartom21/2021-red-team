@@ -18,7 +18,7 @@ RedGame class >> with: aCircularBoard with: aDieHandle with: aDeck withLaps: aNu
 	players ifEmpty: [ self error: 'cannot create a RedGame without players' ].
 	(aNumberOfLaps > 0) ifFalse: [ self error: 'invalid number of laps' ].
 	(aCircularBoard arePlaying: players) ifFalse: [ self error: 'game and board must have the same players' ].
-	aSequence := SequenceOfPlayers with: players.
+	aSequence := Sequence with: players.
 	cardDealer := CardDealer with: players with: aNumberOfAssignatedCards andWith: aDeck.
 	^ self new initializeWith: aCircularBoard with: aDieHandle withLaps: aNumberOfLaps with: aSequence andWith: cardDealer.
 ]
@@ -30,7 +30,7 @@ RedGame >> addPermanentEffect: aMove [
 
 { #category : #actions }
 RedGame >> assertCorrespondentTurn: playerName [
-	playerName = playerSequence currentPlayer
+	playerName = playerSequence currentElement 
 		ifFalse: [ self error: 'cant play on anothers turn' ]
 ]
 
@@ -41,8 +41,14 @@ RedGame >> assertIfGameHasEnded [
 ]
 
 { #category : #actions }
+RedGame >> assertIfHasRolledMax: playerName with: rollValue [
+	(dieHandle hasRolledMax: rollValue)
+		ifTrue: [ board assertFreedomOf: playerName ].
+]
+
+{ #category : #actions }
 RedGame >> assertIfItsPlaying: playerName [
-	(playerSequence assertIfItsPlaying: playerName)
+	(playerSequence assertIfIncluded: playerName)
 		ifFalse: [ self error: 'Cannot roll for a player that is not playing' ]
 ]
 
@@ -59,12 +65,12 @@ RedGame >> breakFree: playerName [
 
 { #category : #queries }
 RedGame >> currentPlayer [
-	^ playerSequence currentPlayer.
+	^ playerSequence currentElement.
 ]
 
 { #category : #actions }
 RedGame >> finishTurn [
-	^ playerSequence finishTurn.
+	^ playerSequence nextElement.
 ]
 
 { #category : #queries }
@@ -115,7 +121,7 @@ RedGame >> rollDiceFor: playerName [
 	self assertCorrespondentTurn: playerName.
 	self assertLastToRoll: playerName. 
 	rollValue := dieHandle roll .
-	board assertFreedom: playerName with: dieHandle and: rollValue .
+	self assertIfHasRolledMax: playerName with: rollValue .
 	permanentCardsResult := cardDealer
 		accumulatePermanentEffectsOn: playerName.
 	board

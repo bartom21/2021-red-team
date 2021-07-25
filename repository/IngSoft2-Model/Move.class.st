@@ -35,7 +35,7 @@ Move >> changeCard: aCard [
 ]
 
 { #category : #queries }
-Move >> effectOn: aPlayer [
+Move >> effectOn: aTarget [
 	^ card effect.
 ]
 

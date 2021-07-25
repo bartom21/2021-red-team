@@ -15,10 +15,10 @@ LoadedDeck class >> with: cards [
 
 { #category : #initialize }
 LoadedDeck >> intializeWith: someCards [ 
-	cards := someCards.
+	cards := Sequence with: someCards.
 ]
 
 { #category : #actions }
 LoadedDeck >> takeACard [
-	^ cards removeFirst.
+	^ cards nextElement.
 ]

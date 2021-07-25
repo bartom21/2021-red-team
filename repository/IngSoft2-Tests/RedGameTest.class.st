@@ -14,8 +14,9 @@ RedGameTest >> add: type times: n to: effectsDistribution [
 
 { #category : #tests }
 RedGameTest >> dieHandleWithALoadedDieThatRollsSix [
-	| aDieHandle dice die |
-	die := LoadedDie with: 6.
+	| aDieHandle dice die rollValues |
+	rollValues := #(6).
+	die := LoadedDie with: 6 andWith: rollValues.
 	dice := Array with: die.
 	aDieHandle := DieHandle with: dice.
 	^ aDieHandle
@@ -328,6 +329,35 @@ RedGameTest >> testASpeedMove [
 	game finishTurn.
 	self assert: (game positionOf: 'juan') equals: 12.
 	self assert: (game positionOf: 'martin') equals: 13
+]
+
+{ #category : #tests }
+RedGameTest >> testASpeedPlusMoveToARegularCell [
+	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move |
+	cardsDistribution := OrderedCollection new.
+	cardsDistribution
+		add: (DiscreteProbabilityEvent of: SpeedPlusCard new with: 1).
+	deck := Deck with: (RandomSource basedOn: cardsDistribution).
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	move := TargetedMove with: (Move from: 'martin' with: SpeedPlusCard new) against: 6.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 10
 ]
 
 { #category : #tests }
@@ -803,7 +833,7 @@ RedGameTest >> testCannotCreateAGameWithInvalidNumberOfLaps [
 { #category : #tests }
 RedGameTest >> testCannotCreateAGameWithoutPlayers [
 	| aCircularBoard die dice aDieHandle players fifteenCells deck amountOfInitialCards |
-	die := LoadedDie with: 6.
+	die := LoadedDie with: 6 andWith: #(6).
 	dice := Array with: die.
 	aDieHandle := DieHandle with: dice.
 	players := #('martin' 'juan' 'roman').
@@ -1113,7 +1143,7 @@ RedGameTest >> testGoBackwardsIfAccumulatedEffectsGiveANegativeResult [
 	cardsDistribution
 		add: (DiscreteProbabilityEvent of: OverloadCard new with: 1).
 	deck := Deck with: (RandomSource basedOn: cardsDistribution).
-	die := LoadedDie with: 3.
+	die := LoadedDie with: 3 andWith: #(3).
 	dice := Array with: die.
 	aDieHandle := DieHandle with: dice.
 	players := #('martin' 'juan').
@@ -1180,6 +1210,47 @@ RedGameTest >> testLandOnAPrisionCell [
 	game rollDiceFor: 'martin'.
 	game finishTurn.
 	self assert: (game positionOf: 'martin') equals: 6.
+]
+
+{ #category : #tests }
+RedGameTest >> testLandOnAntomicBombWhileSomePlayerIsArrested [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards die dice rollValues |
+	cardsDistribution := OrderedCollection new.
+	cardsDistribution
+		add: (DiscreteProbabilityEvent of: SpeedCard new with: 1).
+	deck := Deck with: (RandomSource basedOn: cardsDistribution).
+	rollValues := #(6 5 5 7).
+	die := LoadedDie with: 8 andWith: rollValues.
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice. 
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: PrisionCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: AtomicBombCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 3 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 0.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 6.
+	self assert: (game positionOf: 'juan') equals: 1.
 ]
 
 { #category : #tests }
@@ -1472,7 +1543,7 @@ RedGameTest >> testRedoAnAccelerationMove [
 	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
 	players := #('martin' 'juan').
 	fifteenRegularCells := OrderedCollection new.
-	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	self add: RegularCell new times: 30 to: fifteenRegularCells.
 	aCircularBoard := CircularBoard
 		with: players
 		andWithAll: fifteenRegularCells.
@@ -1503,8 +1574,11 @@ RedGameTest >> testRedoAnAccelerationMove [
 { #category : #tests }
 RedGameTest >> testRollALoadedDie [
 	| aDie |
-	aDie := LoadedDie with: 8.
-	self assert: aDie roll equals: 8
+	aDie := LoadedDie with: 8 andWith: #(5 6 7).
+	self assert: aDie roll equals: 5.
+	self assert: aDie roll equals: 6.
+	self assert: aDie roll equals: 7.
+	self assert: aDie roll equals: 5.
 ]
 
 { #category : #tests }
@@ -1515,11 +1589,11 @@ RedGameTest >> testRollARandomDie [
 ]
 
 { #category : #tests }
-RedGameTest >> testRollingADieHandleGivesTheSumOfItsDiceFaces [
+RedGameTest >> testRollingADieHandleGivesTheSumOfItsDiceRollValues [
 	| aDieHandle die1 die2 die3 dice |
-	die1 := LoadedDie with: 4.
-	die2 := LoadedDie with: 8.
-	die3 := LoadedDie with: 6.
+	die1 := LoadedDie with: 4 andWith: #(4).
+	die2 := LoadedDie with: 8 andWith: #(8).
+	die3 := LoadedDie with: 6 andWith: #(6).
 	dice := Array with: die1 with: die2 with: die3.
 	aDieHandle := DieHandle with: dice.
 	self assert: aDieHandle roll equals: 18

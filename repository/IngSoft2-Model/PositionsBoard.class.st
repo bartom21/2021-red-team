@@ -13,6 +13,14 @@ PositionsBoard class >> with: somePositions [
 	^ self new initializeWith: somePositions .
 ]
 
+{ #category : #actions }
+PositionsBoard >> activatePositionOf: playerName [
+	| newPosition oldPosition|
+	oldPosition := self findPositionOf: playerName in: positions.
+	newPosition := oldPosition getActivate.
+	positions replaceAll: oldPosition with: newPosition.
+]
+
 { #category : #queries }
 PositionsBoard >> anyPlayerFinished: laps withBoardOfSize: cells [
 	^ (positions anySatisfy: [ :position | (position valueOfPosition) > (cells*laps) ]).
@@ -23,6 +31,23 @@ PositionsBoard >> arePlaying: players [
 	| playersInBoard |
 	playersInBoard := positions collect: [ :aPosition | aPosition nameOfPlayer].
 	^ players asOrderedCollection = playersInBoard 
+]
+
+{ #category : #actions }
+PositionsBoard >> assertPossibleUnblockFor: playerName [
+	| aPosition |
+	aPosition := self findPositionOf: playerName in: positions .
+	(aPosition isBlocked)
+		ifTrue: [ self activatePositionOf: playerName ]
+	 
+]
+
+{ #category : #actions }
+PositionsBoard >> blockPositionOf: playerName [
+	| newPosition oldPosition|
+	oldPosition := self findPositionOf: playerName in: positions.
+	newPosition := oldPosition getBlocked.
+	positions replaceAll: oldPosition with: newPosition.
 ]
 
 { #category : #queries }

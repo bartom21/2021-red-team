@@ -30,9 +30,9 @@ TargetedMove >> changeCard: aCard [
 ]
 
 { #category : #actions }
-TargetedMove >> effectOn: aPlayer [
-	^ target = aPlayer
-		ifTrue: [ move effectOn: aPlayer ]
+TargetedMove >> effectOn: aTarget [ 
+	^ target = aTarget 
+		ifTrue: [ move effectOn: aTarget ]
 		ifFalse: [ 0 ]
 ]
 

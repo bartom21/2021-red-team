@@ -22,10 +22,10 @@ DieHandle >> hasRolledMax: rollValue [
 
 { #category : #initialize }
 DieHandle >> initializeWith: anArrayOfDie [
-	dice := anArrayOfDie.
+	dice := anArrayOfDie asOrderedCollection .
 ]
 
 { #category : #actions }
 DieHandle >> roll [
-	^ dice sum: [ :aDie | aDie roll ].
+	^ dice inject: 0 into: [ :inicial :die | inicial + die roll ]. 
 ]
