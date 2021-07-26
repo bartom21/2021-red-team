@@ -94,13 +94,13 @@ MovesTest >> testACancellationMoveAgainstASpeedPlus [
 
 { #category : #tests }
 MovesTest >> testARedoMove [
-	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards |
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards objective |
 	cards := OrderedCollection new.
 	cards
 		add: OverloadCard new;
-		add: RedoCard new;
-		add: SpeedCard new;
-		add: RepeatCard new.
+		add: CancellationCard new;
+		add: OverloadCard new;
+		add: RedoCard new.
 	deck := LoadedDeck with: cards.
 	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
 	players := #('martin' 'juan').
@@ -117,25 +117,32 @@ MovesTest >> testARedoMove [
 		withLaps: 1
 		with: players
 		andWith: amountOfInitialCards.
-	game rollDiceFor: 'martin'.
 	move := TargetedMove
 		with: (Move from: 'martin' with: OverloadCard  new) against: 'juan'.
 	game play: move.
+	game rollDiceFor: 'martin'.
 	game finishTurn.
 	move := TargetedMove
-		with: (Move from: 'juan' with: SpeedCard  new) against: 'juan'.
+		with: (Move from: 'juan' with: OverloadCard  new) against: 'martin'.
 	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
+	objective := TargetedMove
+		with: (Move from: 'juan' with: OverloadCard  new) against: 'martin'.
 	move := TargetedMove
-		with: (Move from: 'martin' with: RedoCard new) against: 'martin'.
+		with: (Move from: 'martin' with: CancellationCard  new) against: objective.
 	game play: move.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
+	objective := TargetedMove
+		with: (Move from: 'martin' with: OverloadCard  new) against: 'juan'.
+	move := TargetedMove
+		with: (Move from: 'juan' with: RedoCard  new) against: objective.
+	game play: move.
 	game rollDiceFor: 'juan'.
 	game finishTurn.
 	self assert: (game positionOf: 'juan') equals: 10.
-	self assert: (game positionOf: 'martin') equals: 13
+	self assert: (game positionOf: 'martin') equals: 12
 ]
 
 { #category : #tests }
@@ -185,47 +192,6 @@ MovesTest >> testARedoMoveAfterARedoMoveReusesTheSameCard [
 ]
 
 { #category : #tests }
-MovesTest >> testARepeatMove [
-	| aDieHandle players fifteenRegularCells aCircularBoard game deck move amountOfInitialCards die dice |
-	cardsDistribution := OrderedCollection new.
-	cardsDistribution
-		add: (DiscreteProbabilityEvent of: RepeatCard new with: 1).
-	deck := Deck with: (RandomSource basedOn: cardsDistribution).
-	die := LoadedDie with: 6 andWith: #(4 4 2 3).
-	dice := Array with: die.
-	aDieHandle := DieHandle with: dice. 
-	players := #('martin' 'juan').
-	fifteenRegularCells := OrderedCollection new.
-	self add: RegularCell new times: 5 to: fifteenRegularCells.
-	self add: (MoonWalkCell with: 3) times: 1 to: fifteenRegularCells.
-	self add: RegularCell new times: 9 to: fifteenRegularCells.
-	aCircularBoard := CircularBoard
-		with: players
-		andWithAll: fifteenRegularCells.
-	amountOfInitialCards := 2.
-	game := RedGame
-		with: aCircularBoard
-		with: aDieHandle
-		with: deck
-		withLaps: 1
-		with: players
-		andWith: amountOfInitialCards.
-	game rollDiceFor: 'martin'.
-	game finishTurn.
-	game rollDiceFor: 'juan'.
-	game finishTurn.
-	game rollDiceFor: 'martin'.
-	game finishTurn.
-	move := TargetedMove with: (Move from: 'juan' with: RepeatCard new) against: 'juan'.
-	game play: move.
-	game rollDiceFor: 'juan'.
-	game finishTurn.
-	self assert: (game positionOf: 'juan') equals: 4.
-	self assert: (game positionOf: 'martin') equals: 3
-	
-]
-
-{ #category : #tests }
 MovesTest >> testASpeedMove [
 	| aDieHandle players fifteenRegularCells aCircularBoard game deck move amountOfInitialCards |
 	cardsDistribution := OrderedCollection new.
@@ -263,6 +229,47 @@ MovesTest >> testASpeedMove [
 ]
 
 { #category : #tests }
+MovesTest >> testASpeedPlusMoveToAMoonWalkCell [
+	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move cards die dice |
+	cards := OrderedCollection new.
+	cards
+		add: SpeedPlusCard new;
+		add: CancellationCard new;
+		add: SpeedPlusCard new;
+		add: CancellationCard new.
+	deck := LoadedDeck with: cards.
+	die := LoadedDie with: 6 andWith: #(4 4 2 3).
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice. 
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: (MoonWalkCell with: 2) times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	move := TargetedMove with: (Move from: 'martin' with: SpeedPlusCard new) against: 6.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 10.
+	self assert: (game positionOf: 'juan') equals: 2.
+]
+
+{ #category : #tests }
 MovesTest >> testASpeedPlusMoveToARegularCell [
 	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move cards |
 	cards := OrderedCollection new.
@@ -272,7 +279,6 @@ MovesTest >> testASpeedPlusMoveToARegularCell [
 		add: SpeedPlusCard new;
 		add: CancellationCard new.
 	deck := LoadedDeck with: cards.
-	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
 	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
 	players := #('martin' 'juan').
 	fifteenRegularCells := OrderedCollection new.
@@ -293,6 +299,115 @@ MovesTest >> testASpeedPlusMoveToARegularCell [
 	game rollDiceFor: 'martin'.
 	game finishTurn.
 	self assert: (game positionOf: 'martin') equals: 10
+]
+
+{ #category : #tests }
+MovesTest >> testASpeedPlusMoveToASpeedUpCell [
+	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move cards |
+	cards := OrderedCollection new.
+	cards
+		add: SpeedPlusCard new;
+		add: CancellationCard new;
+		add: SpeedPlusCard new;
+		add: CancellationCard new.
+	deck := LoadedDeck with: cards.
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: SpeedUpCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	move := TargetedMove with: (Move from: 'martin' with: SpeedPlusCard new) against: 6.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 14
+]
+
+{ #category : #tests }
+MovesTest >> testASpeedPlusMoveToAWormHolepCell [
+	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move cards |
+	cards := OrderedCollection new.
+	cards
+		add: SpeedPlusCard new;
+		add: CancellationCard new;
+		add: SpeedPlusCard new;
+		add: CancellationCard new.
+	deck := LoadedDeck with: cards.
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: WormHoleCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	move := TargetedMove with: (Move from: 'martin' with: SpeedPlusCard new) against: 6.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 6
+]
+
+{ #category : #tests }
+MovesTest >> testASpeedPlusMoveToAnAtomicBombCell [
+	| deck aDieHandle players fifteenRegularCells aCircularBoard amountOfInitialCards game move cards die dice |
+	cards := OrderedCollection new.
+	cards
+		add: SpeedPlusCard new;
+		add: CancellationCard new;
+		add: SpeedPlusCard new;
+		add: CancellationCard new.
+	deck := LoadedDeck with: cards.
+	die := LoadedDie with: 6 andWith: #(4 4 2 3).
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice. 
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: (AtomicBombCell new) times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	move := TargetedMove with: (Move from: 'martin' with: SpeedPlusCard new) against: 6.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'martin') equals: 5.
+	self assert: (game positionOf: 'juan') equals: 1.
 ]
 
 { #category : #tests }
@@ -425,6 +540,91 @@ MovesTest >> testPlayingARepeatCardHasNoEffectIfAnyoneRollsTheDice [
 ]
 
 { #category : #tests }
+MovesTest >> testRedoAFreedomMove [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards die dice |
+	cards := OrderedCollection new.
+	cards
+		add: FreedomCard new;
+		add: RedoCard new;
+		add: SpeedCard new;
+		add: RedoCard new.
+	deck := LoadedDeck with: cards.
+	die := LoadedDie with: 6 andWith: #(6 6 2 3).
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice. 
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: PrisionCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	move := Move from: 'martin' with: FreedomCard new.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	move := TargetedMove
+		with: (Move from: 'juan' with: RedoCard  new) against: 'juan'.
+	game play: move.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	self assert: (game positionOf: 'juan') equals: 9.
+	self assert: (game positionOf: 'martin') equals: 8
+]
+
+{ #category : #tests }
+MovesTest >> testRedoASpeedMove [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards |
+	cards := OrderedCollection new.
+	cards
+		add: SpeedCard new;
+		add: RedoCard new;
+		add: FreedomCard new;
+		add: RedoCard new.
+	deck := LoadedDeck with: cards.
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	move := TargetedMove
+		with: (Move from: 'martin' with: SpeedCard  new) against: 'martin'.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	move := TargetedMove
+		with: (Move from: 'juan' with: RedoCard  new) against: 'juan'.
+	game play: move.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	self assert: (game positionOf: 'juan') equals: 7.
+	self assert: (game positionOf: 'martin') equals: 7.
+]
+
+{ #category : #tests }
 MovesTest >> testRedoAnAccelerationMove [
 	| aDieHandle players fifteenRegularCells aCircularBoard game deck move cards amountOfInitialCards |
 	cards := OrderedCollection new.
@@ -538,5 +738,45 @@ MovesTest >> testRepeatASpeedUpCellMove [
 	game finishTurn.
 	self assert: (game positionOf: 'juan') equals: 10.
 	self assert: (game positionOf: 'martin') equals: 10
+	
+]
+
+{ #category : #tests }
+MovesTest >> testRepeatASpeedUpCellMoveAndStayInPrision [
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck move amountOfInitialCards die dice|
+	cardsDistribution := OrderedCollection new.
+	cardsDistribution
+		add: (DiscreteProbabilityEvent of: RepeatCard new with: 1).
+	deck := Deck with: (RandomSource basedOn: cardsDistribution).
+	die := LoadedDie with: 8 andWith: #(6 7 2 3).
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice.
+	players := #('martin' 'juan').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 5 to: fifteenRegularCells.
+	self add: PrisionCell new times: 1 to: fifteenRegularCells.
+	self add: SpeedUpCell new times: 1 to: fifteenRegularCells.
+	self add: RegularCell new times: 9 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	amountOfInitialCards := 2.
+	game := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 1
+		with: players
+		andWith: amountOfInitialCards.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	move := TargetedMove with: (Move from: 'martin' with: RepeatCard new) against: 'martin'.
+	game play: move.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
+	self assert: (game positionOf: 'juan') equals: 11.
+	self assert: (game positionOf: 'martin') equals: 6
 	
 ]
