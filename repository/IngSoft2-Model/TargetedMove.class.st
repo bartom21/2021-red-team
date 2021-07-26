@@ -42,6 +42,11 @@ TargetedMove >> effectOn: aTarget [
 		ifFalse: [ 0 ]
 ]
 
+{ #category : #actions }
+TargetedMove >> effectWith: aCardDealer andWith: aCircularBoard [ 
+	move effecWith: aCardDealer andWith: aCircularBoard 
+]
+
 { #category : #queries }
 TargetedMove >> equalsMove: anotherMove [ 
 	^ (anotherMove isTargeted) and: [ (move equalsMove: anotherMove move) and: [ target = anotherMove target ]].

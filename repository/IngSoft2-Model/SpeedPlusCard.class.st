@@ -17,8 +17,9 @@ SpeedPlusCard >> assertTargeted: aMove [
 ]
 
 { #category : #actions }
-SpeedPlusCard >> effect [
-	^4
+SpeedPlusCard >> effectOn: player  with: aCardDealer andWith: aCircularBoard [
+	(SpeedUpCell new) activateEffect: aCircularBoard from: player with: aCardDealer
+	
 ]
 
 { #category : #queries }

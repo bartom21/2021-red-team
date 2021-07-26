@@ -38,14 +38,6 @@ CircularBoard >> arePlaying: players [
 ]
 
 { #category : #actions }
-CircularBoard >> assertEffectsOn: currentPosition with: cardDealer for: player [
-	| effectsValue |
-	effectsValue := cardDealer sumPermanentEffectsFor: currentPosition.
-	self updatePositionOf: player with: effectsValue. 
-
-]
-
-{ #category : #actions }
 CircularBoard >> assertFreedomOf: playerName [ 
 	positionsBoard assertPossibleUnblockFor: playerName.
 
@@ -130,5 +122,5 @@ CircularBoard >> with: cardDealer  move: player with: rollValue [
 	currentCell := cells at: currentPosition.
 	lastCell := currentCell .
 	currentCell activateEffect: self from: player with: cardDealer.
-	self assertEffectsOn: currentPosition with: cardDealer for: player.
+	cardDealer activatePermanentEffectsFor: player on: currentPosition with: self.
 ]

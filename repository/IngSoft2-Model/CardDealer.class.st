@@ -33,6 +33,15 @@ CardDealer >> accumulatePermanentEffectsOn: target [
 ]
 
 { #category : #actions }
+CardDealer >> activatePermanentEffectsFor: player on: target  with: aCircularBoard [
+	| effects |
+	effects := permanentEffects select: [ :move | (move isTargeted) and: [move target = target]].
+	effects ifNotEmpty: [effects do: [ :move | move effectWith: self andWith: aCircularBoard ]].
+	
+	
+]
+
+{ #category : #actions }
 CardDealer >> addCardTo: aPlayerName [
 	assignatedCards add: (AssignatedCard from: aPlayerName with: deck takeACard).
 ]
@@ -73,15 +82,6 @@ CardDealer >> removePermanentEffect: aMove [
 	permanentEffects ifEmpty: [ self error: 'there are no permanent cards' ].
 	(permanentEffects anySatisfy: [ :move | move equalsMove: aMove ]) ifFalse: [ self error: 'Cant cancel a card that wasnt played' ].
 	permanentEffects := permanentEffects reject: [ :move | move equalsMove: aMove ].
-]
-
-{ #category : #actions }
-CardDealer >> sumPermanentEffectsFor: target [
-	| effects |
-	effects := permanentEffects select: [ :move | move isTargeted ].
-	^effects ifEmpty: [ 0 ] ifNotEmpty: [effects sum: [ :move | move effectOn: target]].
-	
-	
 ]
 
 { #category : #actions }

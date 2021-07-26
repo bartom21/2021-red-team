@@ -34,6 +34,11 @@ Move >> changeCard: aCard [
 ]
 
 { #category : #queries }
+Move >> effecWith: aCardDealer andWith: aCircularBoard [ 
+	card effectOn: player  with: aCardDealer andWith: aCircularBoard.
+]
+
+{ #category : #queries }
 Move >> effectOn: aTarget [
 	^ card effect.
 ]
