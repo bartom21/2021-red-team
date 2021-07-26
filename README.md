@@ -1,7 +1,7 @@
 # Ingenieria del Software II - Template
 
-[![Build Status](https://travis-ci.org/uca-is2/2021-red-team.svg?branch=master)](https://travis-ci.org/uca-is2/2021-red-team)
-[![Coverage Status](https://coveralls.io/repos/github/uca-is2/2021-red-team/badge.svg?branch=master)](https://coveralls.io/github/uca-is2/2021-red-team?branch=master)
+![GHA Status](https://github.com/bartom21/2021-red-team/actions/workflows/GHA.yml/badge.svg)
+[![Coverage Status](https://coveralls.io/repos/github/bartom21/2021-red-team/badge.svg?branch=master)](https://coveralls.io/github/uca-is2/2021-red-team?branch=master)
 
 ## Metacello
 
