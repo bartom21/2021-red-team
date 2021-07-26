@@ -149,7 +149,7 @@ RedGame >> rollDiceFor: playerName [
 	rollValue := dieHandle roll .
 	self assertIfHasRolledMax: playerName with: rollValue .
 	permanentCardsResult := cardDealer
-		accumulatePermanentEffectsOnPlayer: playerName.
+		accumulatePermanentEffectsOn: playerName.
 	board
 		with: cardDealer
 		move: playerName

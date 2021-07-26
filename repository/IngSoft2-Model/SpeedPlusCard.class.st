@@ -21,7 +21,7 @@ SpeedPlusCard >> effect [
 	^4
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #queries }
 SpeedPlusCard >> equals: anotherCard [
 	^ self class = anotherCard class.
 ]

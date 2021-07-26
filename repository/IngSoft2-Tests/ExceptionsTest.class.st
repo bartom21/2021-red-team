@@ -5,6 +5,14 @@ Class {
 }
 
 { #category : #tests }
+ExceptionsTest >> testALoadedDieCannotRollAValueGreaterThanItsFaces [
+	self
+		should: [ LoadedDie with: 6 andWith: #(7). ]
+		raise: Error
+		withMessage: 'A loaded die cannott roll a number greater than its faces'
+]
+
+{ #category : #tests }
 ExceptionsTest >> testCannotAskARandomSourceToProduceAnInvalidNumberOfItems [
 	| randomSource |
 	cardsDistribution := OrderedCollection new.

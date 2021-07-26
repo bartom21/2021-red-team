@@ -26,16 +26,7 @@ CardDealer class >> with: players with: value andWith: deck [
 ]
 
 { #category : #actions }
-CardDealer >> accumulatePermanentEffectsOnCell: target [
-	| effects |
-	effects := permanentEffects select: [ :move | move isTargeted ].
-	^effects ifEmpty: [ 0 ] ifNotEmpty: [effects sum: [ :move | move effectOn: target]].
-	
-	
-]
-
-{ #category : #actions }
-CardDealer >> accumulatePermanentEffectsOnPlayer: target [
+CardDealer >> accumulatePermanentEffectsOn: target [
 	^permanentEffects ifEmpty: [ 0 ] ifNotEmpty: [permanentEffects sum: [ :move | move effectOn: target]].
 	
 	
@@ -82,6 +73,15 @@ CardDealer >> removePermanentEffect: aMove [
 	permanentEffects ifEmpty: [ self error: 'there are no permanent cards' ].
 	(permanentEffects anySatisfy: [ :move | move equalsMove: aMove ]) ifFalse: [ self error: 'Cant cancel a card that wasnt played' ].
 	permanentEffects := permanentEffects reject: [ :move | move equalsMove: aMove ].
+]
+
+{ #category : #actions }
+CardDealer >> sumPermanentEffectsFor: target [
+	| effects |
+	effects := permanentEffects select: [ :move | move isTargeted ].
+	^effects ifEmpty: [ 0 ] ifNotEmpty: [effects sum: [ :move | move effectOn: target]].
+	
+	
 ]
 
 { #category : #actions }

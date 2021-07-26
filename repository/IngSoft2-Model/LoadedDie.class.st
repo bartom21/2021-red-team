@@ -9,6 +9,13 @@ Class {
 }
 
 { #category : #'instance creation' }
+LoadedDie class >> assert: rollValues areLessThan: aNumberOfFaces [
+	(rollValues anySatisfy: [ :rollValue | rollValue > aNumberOfFaces ])
+		ifTrue:
+			[ self error: 'A loaded die cannott roll a number greater than its faces']
+]
+
+{ #category : #'instance creation' }
 LoadedDie class >> assertIfEmpty: cards [
 	cards
 		ifEmpty: [ self error: 'Cannot create a LoadedDie without roll values' ]
@@ -24,6 +31,7 @@ LoadedDie class >> assertMinimumOfFaces: aNumberOfFaces [
 LoadedDie class >> with: aNumberOfFaces andWith: rollValues [
 	self assertMinimumOfFaces: aNumberOfFaces.
 	self assertIfEmpty: rollValues.
+	self assert: rollValues areLessThan: aNumberOfFaces.
 	^ self new initializeWith: aNumberOfFaces andWith: rollValues
 ]
 

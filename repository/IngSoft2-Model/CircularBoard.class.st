@@ -40,7 +40,7 @@ CircularBoard >> arePlaying: players [
 { #category : #actions }
 CircularBoard >> assertEffectsOn: currentPosition with: cardDealer for: player [
 	| effectsValue |
-	effectsValue := cardDealer accumulatePermanentEffectsOnCell: currentPosition.
+	effectsValue := cardDealer sumPermanentEffectsFor: currentPosition.
 	self updatePositionOf: player with: effectsValue. 
 
 ]

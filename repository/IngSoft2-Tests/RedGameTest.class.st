@@ -160,14 +160,14 @@ RedGameTest >> testAskRankingOfPlayerDuringTheGame [
 
 { #category : #tests }
 RedGameTest >> testBreakeFreeByAFreedomCard [
-	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards die dice move |
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards move die dice |
 	cardsDistribution := OrderedCollection new.
 	cardsDistribution
 		add: (DiscreteProbabilityEvent of: FreedomCard new with: 1).
 	deck := Deck with: (RandomSource basedOn: cardsDistribution).
 	die := LoadedDie with: 6 andWith: #(3 4 5).
 	dice := Array with: die.
-	aDieHandle := DieHandle with: dice. 
+	aDieHandle := DieHandle with: dice.
 	players := #('martin' 'juan').
 	fifteenRegularCells := OrderedCollection new.
 	self add: RegularCell new times: 2 to: fifteenRegularCells.
@@ -192,17 +192,19 @@ RedGameTest >> testBreakeFreeByAFreedomCard [
 	game play: move.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
-	self assert: (game positionOf: 'martin') equals: 8.
+	self assert: (game positionOf: 'martin') equals: 8
 ]
 
 { #category : #tests }
 RedGameTest >> testBreakeFreeByMaxRollValue [
-	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards |
+	| aDieHandle players fifteenRegularCells aCircularBoard game deck amountOfInitialCards die dice |
 	cardsDistribution := OrderedCollection new.
 	cardsDistribution
 		add: (DiscreteProbabilityEvent of: SpeedCard new with: 1).
 	deck := Deck with: (RandomSource basedOn: cardsDistribution).
-	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	die := LoadedDie with: 6 andWith: #(6 4 5 5 6).
+	dice := Array with: die.
+	aDieHandle := DieHandle with: dice.
 	players := #('martin' 'juan').
 	fifteenRegularCells := OrderedCollection new.
 	self add: RegularCell new times: 5 to: fifteenRegularCells.
@@ -225,7 +227,12 @@ RedGameTest >> testBreakeFreeByMaxRollValue [
 	game finishTurn.
 	game rollDiceFor: 'martin'.
 	game finishTurn.
+	game rollDiceFor: 'juan'.
+	game finishTurn.
+	game rollDiceFor: 'martin'.
+	game finishTurn.
 	self assert: (game positionOf: 'martin') equals: 12.
+	self assert: (game positionOf: 'juan') equals: 9.
 ]
 
 { #category : #tests }
@@ -270,30 +277,7 @@ RedGameTest >> testGoBackwardsIfAccumulatedEffectsGiveANegativeResult [
 ]
 
 { #category : #tests }
-RedGameTest >> testPlayAGameAndAskWhoWon [
-	| aCircularBoard aDieHandle players aGame fifteenRegularCells deck amountOfInitialCards |
-	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
-	players := #('martin' 'juan' 'roman').
-	fifteenRegularCells := OrderedCollection new.
-	self add: RegularCell new times: 15 to: fifteenRegularCells.
-	aCircularBoard := CircularBoard
-		with: players
-		andWithAll: fifteenRegularCells.
-	deck := self randomDeck.
-	amountOfInitialCards := 2.
-	aGame := RedGame
-		with: aCircularBoard
-		with: aDieHandle
-		with: deck
-		withLaps: 2
-		with: players
-		andWith: amountOfInitialCards .
-	self playWithoutMoves: aGame.
-	self assert: aGame winner equals: 'martin'
-]
-
-{ #category : #tests }
-RedGameTest >> testPlayAGameWithARandomBoardAndRandomDice [
+RedGameTest >> testPlayAGame [
 	| aCircularBoard dice aDieHandle players aGame die1 die2 die3 numberOfCells deck amountOfInitialCards |
 	die1 := RandomDie with: 10.
 	die2 := RandomDie with: 8.
@@ -316,6 +300,29 @@ RedGameTest >> testPlayAGameWithARandomBoardAndRandomDice [
 		andWith: amountOfInitialCards .
 	self playWithoutMoves: aGame.
 	self assert: aGame hasEnded
+]
+
+{ #category : #tests }
+RedGameTest >> testPlayAGameAndAskWhoWon [
+	| aCircularBoard aDieHandle players aGame fifteenRegularCells deck amountOfInitialCards |
+	aDieHandle := self dieHandleWithALoadedDieThatRollsSix.
+	players := #('martin' 'juan' 'roman').
+	fifteenRegularCells := OrderedCollection new.
+	self add: RegularCell new times: 15 to: fifteenRegularCells.
+	aCircularBoard := CircularBoard
+		with: players
+		andWithAll: fifteenRegularCells.
+	deck := self randomDeck.
+	amountOfInitialCards := 2.
+	aGame := RedGame
+		with: aCircularBoard
+		with: aDieHandle
+		with: deck
+		withLaps: 2
+		with: players
+		andWith: amountOfInitialCards .
+	self playWithoutMoves: aGame.
+	self assert: aGame winner equals: 'martin'
 ]
 
 { #category : #tests }
