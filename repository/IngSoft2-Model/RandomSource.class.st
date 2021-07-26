@@ -9,12 +9,25 @@ Class {
 }
 
 { #category : #'instance creation' }
+RandomSource class >> assertEqualsToOne: probability [
+	(probability < 0.99 or: [ probability > 1.01 ])
+		ifTrue: [ self error: 'The sum of all events probabilities must sum 1' ]
+]
+
+{ #category : #'instance creation' }
+RandomSource class >> assertIfEmpty: eventsDistribution [
+	eventsDistribution
+		ifEmpty: [ self
+				error: 'cant create a RandomSource without a events distribution' ]
+]
+
+{ #category : #'instance creation' }
 RandomSource class >> basedOn: eventsDistribution [
 	| probability |
-	eventsDistribution ifEmpty: [ self error: 'cant create a RandomSource without a events distribution' ].
-	probability := eventsDistribution sum: [ :event | event probability].
-	(probability < 0.99 or: [probability > 1.01]) ifTrue: [ self error: 'The sum of all events probabilities must sum 1' ].
-	^self new initializeWith: eventsDistribution .
+	self assertIfEmpty: eventsDistribution.
+	probability := eventsDistribution sum: [ :event | event probability ].
+	self assertEqualsToOne: probability.
+	^ self new initializeWith: eventsDistribution
 ]
 
 { #category : #initialize }

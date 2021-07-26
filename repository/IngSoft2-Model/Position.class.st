@@ -3,31 +3,60 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'player',
-		'reach'
+		'station',
+		'state'
 	],
 	#category : #'IngSoft2-Model'
 }
 
 { #category : #'instance creation' }
-Position class >> from: playerName [
-	^ self from: playerName with: 0.
+Position class >> assertIfEmpty: playerName [
+	playerName
+		ifEmpty: [ self error: 'cant create a Position without a name' ]
 ]
 
 { #category : #'instance creation' }
-Position class >> from: playerName with: newValue [
-	playerName ifEmpty: [ self error: 'cant create a Position without a name' ].
-	^ self new initializeWith: playerName andWith: newValue.
+Position class >> from: playerName [
+	^ self from: playerName with: 0 andWith: Active new.
+]
+
+{ #category : #'instance creation' }
+Position class >> from: playerName with: newValue andWith: aState [
+	self assertIfEmpty: playerName.
+	^ self new initializeWith: playerName with: newValue andWith: aState
 ]
 
 { #category : #queries }
 Position >> >= aPosition [ 
-	^ (reach >= aPosition valueOfPosition).
+	^ (station >= aPosition valueOfPosition).
+]
+
+{ #category : #actions }
+Position >> getActivate [
+	 ^ self class from: player with: station andWith: Active new.
+	
+	
+	
+]
+
+{ #category : #actions }
+Position >> getBlocked [.
+	 ^ self class from: player with: station andWith: Blocked new.
+	
+	
+	
 ]
 
 { #category : #initialize }
-Position >> initializeWith: name andWith: newValue [
+Position >> initializeWith: name with: newValue andWith: aState [
 	player := name.
-	reach := newValue .
+	station := newValue .
+	state := aState.
+]
+
+{ #category : #queries }
+Position >> isBlocked [
+	^ state isBlocked.
 ]
 
 { #category : #queries }
@@ -37,9 +66,10 @@ Position >> nameOfPlayer [
 
 { #category : #actions }
 Position >> updateWith: distance [
-	| newValue newPosition |
-	newValue := (reach + distance) max: 1.
-	newPosition := self class from: player with: newValue.
+	| newStation newPosition newDistance |
+	newDistance := state assertValue: distance.
+	newStation := (newDistance + station) max: 1 .
+	newPosition := self class from: player with: newStation andWith: state.
 	^newPosition.
 	
 	
@@ -47,5 +77,5 @@ Position >> updateWith: distance [
 
 { #category : #queries }
 Position >> valueOfPosition [
-	^ reach.
+	^ station.
 ]

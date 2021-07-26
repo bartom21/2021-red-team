@@ -8,9 +8,23 @@ Class {
 }
 
 { #category : #'instance creation' }
+PositionsBoard class >> assertIfEmpty: somePositions [
+	somePositions
+		ifEmpty: [ self error: 'cannot create a boardOfPositions without positions' ]
+]
+
+{ #category : #'instance creation' }
 PositionsBoard class >> with: somePositions [
-	somePositions ifEmpty: [ self error: 'cannot create a boardOfPositions without positions' ].
-	^ self new initializeWith: somePositions .
+	self assertIfEmpty: somePositions.
+	^ self new initializeWith: somePositions
+]
+
+{ #category : #actions }
+PositionsBoard >> activatePositionOf: playerName [
+	| newPosition oldPosition|
+	oldPosition := self findPositionOf: playerName in: positions.
+	newPosition := oldPosition getActivate.
+	positions replaceAll: oldPosition with: newPosition.
 ]
 
 { #category : #queries }
@@ -23,6 +37,23 @@ PositionsBoard >> arePlaying: players [
 	| playersInBoard |
 	playersInBoard := positions collect: [ :aPosition | aPosition nameOfPlayer].
 	^ players asOrderedCollection = playersInBoard 
+]
+
+{ #category : #actions }
+PositionsBoard >> assertPossibleUnblockFor: playerName [
+	| aPosition |
+	aPosition := self findPositionOf: playerName in: positions .
+	(aPosition isBlocked)
+		ifTrue: [ self activatePositionOf: playerName ]
+	 
+]
+
+{ #category : #actions }
+PositionsBoard >> blockPositionOf: playerName [
+	| newPosition oldPosition|
+	oldPosition := self findPositionOf: playerName in: positions.
+	newPosition := oldPosition getBlocked.
+	positions replaceAll: oldPosition with: newPosition.
 ]
 
 { #category : #queries }

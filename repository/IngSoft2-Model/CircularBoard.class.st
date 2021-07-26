@@ -10,13 +10,21 @@ Class {
 }
 
 { #category : #'instance creation' }
+CircularBoard class >> assertIfEmpty: collection withError: block [
+	collection
+		ifEmpty: [ self error: block ].
+	
+]
+
+{ #category : #'instance creation' }
 CircularBoard class >> with: players andWithAll: cells [
-	| boardOfPositions positions|
-	cells ifEmpty: [ self error: 'cant create a board without cells' ].
-	players ifEmpty: [ self error: 'cant create a board without players' ].
-	positions := players collect: [ :player | (Position from: player)].
-	boardOfPositions := PositionsBoard with: positions asOrderedCollection.
-	^ self new initializeWith: boardOfPositions andWithAll: cells.
+	| boardOfPositions positions |
+	self assertIfEmpty: cells withError: 'cant create a board without cells'. 
+	self assertIfEmpty: players withError: 'cant create a board without players'.
+	positions := players collect: [ :player | Position from: player ].
+	boardOfPositions := PositionsBoard
+		with: positions asOrderedCollection.
+	^ self new initializeWith: boardOfPositions andWithAll: cells
 ]
 
 { #category : #queries }
@@ -27,6 +35,17 @@ CircularBoard >> anyPlayerFinished: laps [
 { #category : #queries }
 CircularBoard >> arePlaying: players [ 
 	^positionsBoard arePlaying: players.
+]
+
+{ #category : #actions }
+CircularBoard >> assertFreedomOf: playerName [ 
+	positionsBoard assertPossibleUnblockFor: playerName.
+
+]
+
+{ #category : #actions }
+CircularBoard >> breakFree: playerName [
+	positionsBoard activatePositionOf: playerName.
 ]
 
 { #category : #initialize }
@@ -77,7 +96,12 @@ CircularBoard >> rankingOf: name [
 
 { #category : #actions }
 CircularBoard >> repeatLastEffectOn: playerName with: aRedGame [ 
-	lastCell activateEffect: self from: playerName with: aRedGame. 
+		lastCell activateEffect: self from: playerName with: aRedGame
+]
+
+{ #category : #actions }
+CircularBoard >> takeToPrision: playerName [
+	positionsBoard blockPositionOf: playerName.
 ]
 
 { #category : #actions }
@@ -86,16 +110,17 @@ CircularBoard >> updatePositionOf: player with: value [
 ]
 
 { #category : #queries }
-CircularBoard >> whoWon [
+CircularBoard >> winner [
 	^positionsBoard whosFirst.
 ]
 
 { #category : #actions }
-CircularBoard >> with: cardsHandler move: player with: rollValue [
-	| currentPosition currentCell |
-	positionsBoard updatePositionOf: player with: rollValue.
+CircularBoard >> with: cardDealer  move: player with: rollValue [
+	| currentPosition currentCell|
+	positionsBoard updatePositionOf: player with: rollValue .
 	currentPosition := self positionOnLap: player.
 	currentCell := cells at: currentPosition.
 	lastCell := currentCell .
-	currentCell activateEffect: self from: player with: cardsHandler.
+	currentCell activateEffect: self from: player with: cardDealer.
+	cardDealer activatePermanentEffectsFor: player on: currentPosition with: self.
 ]
